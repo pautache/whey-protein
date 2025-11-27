@@ -340,8 +340,7 @@ export async function getStaticProps() {
     return {
       props: {
         products: products.slice(0, 500) // Limiter à 500 produits pour le build
-      },
-      revalidate: 86400 // Rebuild chaque jour
+      }
     };
   } catch (error) {
     console.error('Error fetching products:', error);

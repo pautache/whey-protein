@@ -91,9 +91,31 @@ export async function searchWheyProteins(page: number = 1, pageSize: number = 10
 }
 
 export async function getAllWheyProteins(): Promise<Product[]> {
+  // Essayer de charger depuis le fichier local d'abord
+  if (typeof window === 'undefined') {
+    // Côté serveur (Node.js)
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const dataPath = path.join(process.cwd(), 'data', 'products.json');
+      
+      if (fs.existsSync(dataPath)) {
+        const fileContent = fs.readFileSync(dataPath, 'utf-8');
+        const products = JSON.parse(fileContent);
+        console.log(`📦 Chargement de ${products.length} produits depuis data/products.json`);
+        return products;
+      }
+    } catch (error) {
+      console.warn('⚠️ Impossible de charger le fichier local, utilisation de l\'API:', error);
+    }
+  }
+
+  // Fallback: récupération depuis l'API
   const allProducts: Product[] = [];
   let page = 1;
   let hasMore = true;
+
+  console.log('🔄 Récupération depuis l\'API Open Food Facts...');
 
   while (hasMore && page <= 20) { // Limite à 20 pages pour éviter les timeouts
     const response = await searchWheyProteins(page, 100);

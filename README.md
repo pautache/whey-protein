@@ -16,6 +16,16 @@ npm run dev
 
 Ouvrez [http://localhost:3000](http://localhost:3000) dans votre navigateur.
 
+## Récupération des données
+
+Pour récupérer les données depuis Open Food Facts et les sauvegarder localement :
+
+```bash
+npm run fetch-data
+```
+
+Les données seront sauvegardées dans `data/products.json`. Le build utilisera automatiquement ce fichier s'il existe, sinon il récupérera depuis l'API.
+
 ## Build et déploiement
 
 ```bash
@@ -25,6 +35,8 @@ npm run deploy
 Le script va :
 1. Builder le site en pages statiques (génère le dossier `out/`)
 2. Déployer sur le serveur FTP configuré
+
+**Note:** Pour un build plus rapide, exécutez d'abord `npm run fetch-data` pour avoir les données en local.
 
 ## Setup GitHub
 

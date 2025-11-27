@@ -31,6 +31,7 @@ const API_BASE = 'https://world.openfoodfacts.org';
 
 export async function searchWheyProteins(page: number = 1, pageSize: number = 100): Promise<SearchResponse> {
   // Recherche de whey protéines et protéines en poudre
+  // Utilisation de plusieurs stratégies de recherche
   const searchTerms = [
     'whey',
     'protéine en poudre',
@@ -38,10 +39,13 @@ export async function searchWheyProteins(page: number = 1, pageSize: number = 10
     'isolate',
     'concentrate',
     'caséine',
-    'casein'
+    'casein',
+    'protéine',
+    'protein'
   ];
 
-  const searchUrl = `${API_BASE}/cgi/search.pl?action=process&tagtype_0=categories&tag_contains_0=contains&tag_0=proteines&tagtype_1=categories&tag_contains_1=contains&tag_1=supplements&page_size=${pageSize}&page=${page}&json=true&fields=code,product_name,product_name_fr,brands,image_url,image_small_url,nutriments,nutriscore_grade,categories,categories_tags,quantity,packaging`;
+  // Recherche dans les catégories de suppléments et produits riches en protéines
+  const searchUrl = `${API_BASE}/cgi/search.pl?action=process&tagtype_0=categories&tag_contains_0=contains&tag_0=supplements&page_size=${pageSize}&page=${page}&json=true&fields=code,product_name,product_name_fr,brands,image_url,image_small_url,nutriments,nutriscore_grade,categories,categories_tags,quantity,packaging`;
 
   try {
     const response = await fetch(searchUrl);
@@ -53,13 +57,18 @@ export async function searchWheyProteins(page: number = 1, pageSize: number = 10
       const nameFr = (product.product_name_fr || '').toLowerCase();
       const categories = (product.categories || '').toLowerCase();
       const tags = (product.categories_tags || []).join(' ').toLowerCase();
+      const proteinContent = product.nutriments?.proteins_100g || 0;
       
-      return searchTerms.some(term => 
+      // Produits avec au moins 40g de protéines pour 100g OU contenant des mots-clés spécifiques
+      const hasHighProtein = proteinContent >= 40;
+      const hasKeywords = searchTerms.some(term => 
         name.includes(term) || 
         nameFr.includes(term) || 
         categories.includes(term) ||
         tags.includes(term)
-      ) || (product.nutriments?.proteins_100g || 0) > 50;
+      );
+      
+      return hasHighProtein || hasKeywords;
     });
 
     return {

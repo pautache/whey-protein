@@ -3,9 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 const FTP_CONFIG = {
-  host: '89.117.169.72',
-  user: 'u679468784',
-  password: 'tLzhLZFs6VjYwS8DGAFx45GvatGxF',
+  host: process.env.FTP_HOST || '89.117.169.72',
+  user: process.env.FTP_USER || 'u679468784',
+  password: process.env.FTP_PASSWORD || 'tLzhLZFs6VjYwS8DGAFx45GvatGxF',
   port: 21
 };
 
